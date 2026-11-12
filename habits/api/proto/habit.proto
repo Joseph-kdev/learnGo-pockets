@@ -7,6 +7,6 @@ option go_package = "learngo-pockets/habits/api";
 message Habit {
     // Name of the habit cannot be empty
     string name = 1;
-    // Frequecy, expressed in times per week
+    // Frequency, expressed in times per week
     int32 weekly_frequency = 2;
 }
