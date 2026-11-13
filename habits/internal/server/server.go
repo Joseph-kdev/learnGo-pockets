@@ -1,8 +1,10 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"learngo-pockets/habits/api"
+	"learngo-pockets/habits/internal/habit"
 	"net"
 	"strconv"
 
@@ -12,25 +14,32 @@ import (
 // Server is the implementation of the gRPC server
 type Server struct {
 	api.UnimplementedHabitsServer
+	db  Repository
 	lgr Logger
 }
 
-// New returns a server that can ListenAndServe
-func New(lgr Logger) *Server {
-	return &Server{
-		lgr: lgr,
-	}
+type Repository interface {
+	Add(ctx context.Context, habit habit.Habit) error
+	FindAll(ctx context.Context) ([]habit.Habit, error)
 }
 
 type Logger interface {
 	Logf(format string, args ...any)
 }
 
+// New returns a server that can ListenAndServe
+func New(repo Repository, lgr Logger) *Server {
+	return &Server{
+		db: repo,
+		lgr: lgr,
+	}
+}
+
 // ListenAndServe starts listening to the port and serving requests
 func (s *Server) ListenAndServe(port int) error {
 	const addr = "127.0.0.1"
 
-	listener, err := net.Listen("tcp", 
+	listener, err := net.Listen("tcp",
 		net.JoinHostPort(addr, strconv.Itoa(port)))
 
 	if err != nil {

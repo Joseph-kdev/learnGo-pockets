@@ -2,6 +2,7 @@ package habit
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 	"uuid"
@@ -34,12 +35,21 @@ func validateAndCompleteHabit(h Habit) (Habit, error) {
 	return h, nil
 }
 
+type habitCreator interface {
+	Add(ctx context.Context, habit Habit) error
+}
+
 // create validates the Habit, saves it and returns it
-func Create(_ context.Context, h Habit) (Habit, error) {
+func Create(ctx context.Context, db habitCreator, h Habit) (Habit, error) {
 	h, err := validateAndCompleteHabit(h)
 	if err != nil {
 		return Habit{}, err
 	}
-	// add the habit to data storage
+	
+	err = db.Add(ctx, h)
+	if err != nil {
+		return Habit{}, fmt.Errorf("cannot save habit: %w", err)
+	}
+	
 	return h, nil
 }
