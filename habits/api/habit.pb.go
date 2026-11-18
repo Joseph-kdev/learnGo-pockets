@@ -26,7 +26,7 @@ type Habit struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Name of the habit cannot be empty
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Frequecy, expressed in times per week
+	// Frequency, expressed in times per week
 	WeeklyFrequency int32 `protobuf:"varint,2,opt,name=weekly_frequency,json=weeklyFrequency,proto3" json:"weekly_frequency,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
