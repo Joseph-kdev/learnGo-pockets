@@ -4,6 +4,7 @@ package habits;
 option go_package = "learngo-pockets/habits/api";
 
 import "habit.proto";
+import "google/protobuf/timestamp.proto";
 
 // Habits is a service for registering and tracking habits.
 service Habits {
@@ -14,6 +15,9 @@ service Habits {
 
     // ListHabits is the endpoint that returns all habits.
     rpc ListHabits(ListHabitsRequest) returns (ListHabitsResponse);
+
+    // TickHabit is the endpoint that marks a habit as done
+    rpc TickHabit(TickHabitRequest) returns (TickHabitResponse);
 }
 
 // CreateHabitRequest is the message sent to create a habit.
@@ -35,4 +39,19 @@ message ListHabitsRequest {
 // ListHabitsResponse is the response with all the saved habits
 message ListHabitsResponse {
     repeated Habit habits = 1;
+}
+
+// TickHabitRequest is the request to mark a habit as done
+message TickHabitRequest {
+    // Id of the habit to tick 
+    string habit_id = 1;
+
+    // The time to tick the habit
+    // It is optional, if empty default value is set to the current time
+    google.protobuf.Timestamp timestamp = 2;
+}
+
+// TickHabitResponse is the response from the TickHabit endpoint
+// Currently empty but open to grow.
+message TickHabitResponse {
 }

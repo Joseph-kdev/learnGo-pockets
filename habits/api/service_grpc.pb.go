@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	Habits_CreateHabit_FullMethodName = "/habits.Habits/CreateHabit"
 	Habits_ListHabits_FullMethodName  = "/habits.Habits/ListHabits"
+	Habits_TickHabit_FullMethodName   = "/habits.Habits/TickHabit"
 )
 
 // HabitsClient is the client API for Habits service.
@@ -33,6 +34,8 @@ type HabitsClient interface {
 	CreateHabit(ctx context.Context, in *CreateHabitRequest, opts ...grpc.CallOption) (*CreateHabitResponse, error)
 	// ListHabits is the endpoint that returns all habits.
 	ListHabits(ctx context.Context, in *ListHabitsRequest, opts ...grpc.CallOption) (*ListHabitsResponse, error)
+	// TickHabit is the endpoint that marks a habit as done
+	TickHabit(ctx context.Context, in *TickHabitRequest, opts ...grpc.CallOption) (*TickHabitResponse, error)
 }
 
 type habitsClient struct {
@@ -63,6 +66,16 @@ func (c *habitsClient) ListHabits(ctx context.Context, in *ListHabitsRequest, op
 	return out, nil
 }
 
+func (c *habitsClient) TickHabit(ctx context.Context, in *TickHabitRequest, opts ...grpc.CallOption) (*TickHabitResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(TickHabitResponse)
+	err := c.cc.Invoke(ctx, Habits_TickHabit_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // HabitsServer is the server API for Habits service.
 // All implementations must embed UnimplementedHabitsServer
 // for forward compatibility.
@@ -73,6 +86,8 @@ type HabitsServer interface {
 	CreateHabit(context.Context, *CreateHabitRequest) (*CreateHabitResponse, error)
 	// ListHabits is the endpoint that returns all habits.
 	ListHabits(context.Context, *ListHabitsRequest) (*ListHabitsResponse, error)
+	// TickHabit is the endpoint that marks a habit as done
+	TickHabit(context.Context, *TickHabitRequest) (*TickHabitResponse, error)
 	mustEmbedUnimplementedHabitsServer()
 }
 
@@ -88,6 +103,9 @@ func (UnimplementedHabitsServer) CreateHabit(context.Context, *CreateHabitReques
 }
 func (UnimplementedHabitsServer) ListHabits(context.Context, *ListHabitsRequest) (*ListHabitsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListHabits not implemented")
+}
+func (UnimplementedHabitsServer) TickHabit(context.Context, *TickHabitRequest) (*TickHabitResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method TickHabit not implemented")
 }
 func (UnimplementedHabitsServer) mustEmbedUnimplementedHabitsServer() {}
 func (UnimplementedHabitsServer) testEmbeddedByValue()                {}
@@ -146,6 +164,24 @@ func _Habits_ListHabits_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Habits_TickHabit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TickHabitRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HabitsServer).TickHabit(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Habits_TickHabit_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HabitsServer).TickHabit(ctx, req.(*TickHabitRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Habits_ServiceDesc is the grpc.ServiceDesc for Habits service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -160,6 +196,10 @@ var Habits_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListHabits",
 			Handler:    _Habits_ListHabits_Handler,
+		},
+		{
+			MethodName: "TickHabit",
+			Handler:    _Habits_TickHabit_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

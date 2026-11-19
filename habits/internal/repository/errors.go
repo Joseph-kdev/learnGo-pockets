@@ -7,3 +7,8 @@ type Error string
 func (r Error) Error() string {
 	return string(r)
 }
+
+const (
+	ErrNotFound = Error("habit not found in repository")
+	ErrConflictingID = Error("cannot create a habit with already existing ID")
+)
